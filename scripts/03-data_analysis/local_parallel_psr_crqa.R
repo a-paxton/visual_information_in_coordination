@@ -86,7 +86,7 @@ local_parallel_psr_crqa <- function(input_file_list,
     } else if (grepl("1035_ZT_5_Coop", conv)){
       trim_end = 16
     } else if(grepl("1038_ZT_2_Arg_Video", conv)){
-      trim_start = 2*downsampled_sampling_rate + 34 # problems with recording setting until 2:34
+      trim_start = 2*60 + 34 # problems with recording setting until 2:34
     }
     
     # trim as needed

@@ -36,7 +36,7 @@ movement_data_file_list = list.files(path = './data/movement_dataframes-aggregat
                                      full.names = TRUE)
 
 # create directories for our output, if we don't have them yet
-crqa_output_directory = "./data/crqa-opt_02/"
+crqa_output_directory = "./data/crqa/"
 dir.create(crqa_output_directory,
            showWarnings = TRUE,
            recursive = TRUE)
