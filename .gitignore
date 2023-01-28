@@ -1,3 +1,6 @@
 .DS_Store
 /data/
 /slurm_output/
+.Rhistory
+.ipynb_checkpoints/
+*_log.txt
