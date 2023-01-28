@@ -79,6 +79,9 @@ parallel_crqa <- function(movement_data_files,
                             '.csv'),
               row.names = FALSE)
     
+    # free up memory
+    rm(this_crqa)
+    
     # calculate DRP
     this_drp = crqa::drpfromts(ts1 = this_dyad_df$movement_left[1:max_length],
                                ts2 = this_dyad_df$movement_right[1:max_length],
@@ -115,7 +118,7 @@ parallel_crqa <- function(movement_data_files,
               row.names = FALSE)
     
     # free up memory
-    rm(this_crqa)
+    rm(this_drp)
     
   }}
 
