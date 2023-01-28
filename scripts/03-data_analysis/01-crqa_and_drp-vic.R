@@ -42,7 +42,7 @@ dir.create(crqa_output_directory,
            recursive = TRUE)
 
 # identify number of cores available
-available_cores = 5
+available_cores = detectCores() - 1
 
 # initialize a pseudo-cluster with available cores
 pseudo_cluster = parallel::makeCluster(available_cores,

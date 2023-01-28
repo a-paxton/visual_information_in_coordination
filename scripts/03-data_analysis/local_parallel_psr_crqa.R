@@ -22,12 +22,19 @@ local_parallel_psr_crqa <- function(input_file_list,
     
     # set RQA parameters
     target_winsize = downsampled_sampling_rate * 3
-    target_delay = 3
-    target_embedding = 14
-    target_radius = .2
-    # Set 1: delay 3, embed 14, radius .2
-    # Set 2: delay 21, embed 9, radius .35
-    # Tailored set: optimal delay, optimal embedding, radius .3
+    if (grepl("01", crqa_output_directory)){
+      target_delay = 3
+      target_embedding = 14
+      target_radius = .2
+    } else if (grepl("02", crqa_output_directory)){
+      target_delay = 21
+      target_embedding = 9
+      target_radius = .35
+    } else {
+      target_delay = NA
+      target_embedding = NA
+      target_radius = .3
+    }
     
     # grab the dyad we're analyzing and then reform wider
     this_dyad_df = read.csv(this_file,
@@ -78,6 +85,8 @@ local_parallel_psr_crqa <- function(input_file_list,
       trim_end = 9
     } else if (grepl("1035_ZT_5_Coop", conv)){
       trim_end = 16
+    } else if(grepl("1038_ZT_2_Arg_Video", conv)){
+      trim_start = 2*downsampled_sampling_rate + 34 # problems with recording setting until 2:34
     }
     
     # trim as needed
