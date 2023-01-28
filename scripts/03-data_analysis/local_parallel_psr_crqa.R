@@ -1,9 +1,9 @@
-# #### parallel_crqa-vic.R  ####
-# #
-# # This script creates a function to run CRQA with the
-# # `parallel` function... take 2 (or 200).
-# #
-# ##############################
+#### parallel_crqa-vic.R  ####
+#
+# This script creates a function to run CRQA with the
+# `parallel` function.
+#
+##############################
 
 # create a function to be applied over a `split` df
 local_parallel_psr_crqa <- function(input_file_list,
@@ -22,11 +22,12 @@ local_parallel_psr_crqa <- function(input_file_list,
     
     # set RQA parameters
     target_winsize = downsampled_sampling_rate * 3
-    target_delay = NA
-    target_embedding = NA
-    target_radius = .3
+    target_delay = 3
+    target_embedding = 14
+    target_radius = .2
     # Set 1: delay 3, embed 14, radius .2
     # Set 2: delay 21, embed 9, radius .35
+    # Tailored set: optimal delay, optimal embedding, radius .3
     
     # grab the dyad we're analyzing and then reform wider
     this_dyad_df = read.csv(this_file,
@@ -61,7 +62,8 @@ local_parallel_psr_crqa <- function(input_file_list,
         dplyr::filter(t > 1)
     }
     
-    # check to see if we need to trim...
+    # check to see if we need to trim... 
+    # (not a very elegant solution, but here we are, deadlines being as they are)
     trim_start = 0
     trim_end = 0
     if (grepl("1036_ZR_coop", conv)){
@@ -83,27 +85,6 @@ local_parallel_psr_crqa <- function(input_file_list,
     this_dyad_df = this_dyad_df %>% ungroup() %>%
       dplyr::filter(t >= trim_start) %>%
       dplyr::filter(t <= (this_duration - trim_end))
-    
-    # # for some reason, plotting causes it to crash -- so we're removing it for now
-    # # plot and save
-    # movement_plot = ggplot(this_dyad_df) +
-    #   geom_line(aes(x = t,
-    #                 y = movement_left),
-    #             color="blue",
-    #             alpha=.6) +
-    #   geom_line(aes(x = t,
-    #                 y = movement_right),
-    #             color="red",
-    #             alpha=.6) +
-    #   labs(y = "Movement",
-    #        x = "Time (seconds)") +
-    #   ggtitle(paste0("Movement for conversation:\n",
-    #                  conv))
-    # ggsave(filename = paste0('./figures/raw/movement-',conv,'.png'),
-    #        plot = movement_plot,
-    #        height = 3,
-    #        width = 3,
-    #        units = "in")
     
     # calculate delay if we're not going with pre-sets
     if (is.na(target_delay)){
@@ -164,19 +145,6 @@ local_parallel_psr_crqa <- function(input_file_list,
     } else {
       embed_selected = target_embedding
     }
-    
-    # # bind everything to data frame
-    # this_parameter_df = data.frame(conv,
-    #                                delay_left,
-    #                                delay_right,
-    #                                delay_selected,
-    #                                embed_left,
-    #                                embed_right,
-    #                                embed_selected)
-    # write.csv(this_parameter_df,
-    #           file = paste0(crqa_output_directory,
-    #                         'parameters-',conv,'.csv'),
-    #           row.names = FALSE)
     
     # run CRQA
     this_crqa = crqa::crqa(ts1 = this_dyad_df$movement_left,

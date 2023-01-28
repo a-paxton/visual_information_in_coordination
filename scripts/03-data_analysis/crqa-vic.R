@@ -1,6 +1,6 @@
 ####### Visual Information in Coordination: Cross-Recurrence Quantification Analysis #######
 
-# In this script, we'll do some phase-space reconstruction to prepare for CRQA.
+# In this script, we'll do some phase-space reconstruction and then run CRQA.
 # Part of data analysis for Romero & Paxton (2021). To make everything more
 # efficient, we'll go ahead and use local parallelization (rather than doing
 # them all in sequential order).
@@ -36,13 +36,13 @@ movement_data_file_list = list.files(path = './data/movement_dataframes-aggregat
                                      full.names = TRUE)
 
 # create directories for our output, if we don't have them yet
-crqa_output_directory = "./data/crqa/"
+crqa_output_directory = "./data/crqa-opt_02/"
 dir.create(crqa_output_directory,
            showWarnings = TRUE,
            recursive = TRUE)
 
 # identify number of cores available
-available_cores = detectCores() - 1
+available_cores = 5
 
 # initialize a pseudo-cluster with available cores
 pseudo_cluster = parallel::makeCluster(available_cores,
