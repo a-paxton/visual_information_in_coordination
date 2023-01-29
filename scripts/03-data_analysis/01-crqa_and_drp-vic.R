@@ -35,30 +35,39 @@ movement_data_file_list = list.files(path = './data/movement_dataframes-aggregat
                                      pattern = "*.csv",
                                      full.names = TRUE)
 
-# create directories for our output, if we don't have them yet
-crqa_output_directory = "./data/crqa/"
-dir.create(crqa_output_directory,
-           showWarnings = TRUE,
-           recursive = TRUE)
-
-# identify number of cores available
-available_cores = detectCores() - 1
-
-# initialize a pseudo-cluster with available cores
-pseudo_cluster = parallel::makeCluster(available_cores,
-                                       type="FORK",
-                                       setup_strategy="sequential", 
-                                       outfile = './crqa_log.txt', 
-                                       verbose = TRUE)
-
-# set seed for everyone
-parallel::clusterSetRNGStream(pseudo_cluster, iseed = 42)
-
-# parallelize our  analyses
-doParallel::registerDoParallel(pseudo_cluster)
-source('./scripts/03-data_analysis/local_parallel_psr_crqa.R')
-local_parallel_psr_crqa(movement_data_file_list,
-                        crqa_output_directory)
-
-# stop the pseudocluster
-stopCluster(pseudo_cluster)
+# list the total output directories we want
+output_directory_list = c("./data/crqa/",
+                          "./data/crqa-opt_01/",
+                          "./data/crqa-opt_02/")
+for (next_output_directory in output_directory_list){
+  
+  # tell us what we're doing
+  print(paste0("Processing: ",next_output_directory))
+  
+  # create directories for our output, if we don't have them yet
+  dir.create(next_output_directory,
+             showWarnings = TRUE,
+             recursive = TRUE)
+  
+  # identify number of cores available
+  available_cores = detectCores() - 1
+  
+  # initialize a pseudo-cluster with available cores
+  pseudo_cluster = parallel::makeCluster(available_cores,
+                                         type="FORK",
+                                         setup_strategy="sequential", 
+                                         outfile = './crqa_log.txt', 
+                                         verbose = TRUE)
+  
+  # set seed for everyone
+  parallel::clusterSetRNGStream(pseudo_cluster, iseed = 42)
+  
+  # parallelize our  analyses
+  doParallel::registerDoParallel(pseudo_cluster)
+  source('./scripts/03-data_analysis/local_parallel_psr_crqa.R')
+  local_parallel_psr_crqa(movement_data_file_list,
+                          next_output_directory)
+  
+  # stop the pseudocluster
+  stopCluster(pseudo_cluster)
+}

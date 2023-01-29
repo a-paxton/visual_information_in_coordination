@@ -18,7 +18,7 @@ local_parallel_psr_crqa <- function(input_file_list,
     # specify sampling rate and filters
     original_sampling_rate = 30 # in Hz
     downsampled_sampling_rate = 10 # in Hz
-    anti_aliasing_butter = butter(4,.4)
+    anti_aliasing_butter = butter(4,.1)
     
     # set RQA parameters
     target_winsize = downsampled_sampling_rate * 3
