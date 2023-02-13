@@ -1,0 +1,7 @@
+﻿order_var,conv_1,conv_2,conv_3
+1,arg,aff,coop
+2,arg,coop,aff
+3,aff,coop,arg
+4,aff,arg,coop
+5,coop,aff,arg
+6,coop,arg,aff

@@ -18,6 +18,7 @@ rm(list=ls())
 setwd('~/GitHub/visual_information_in_coordination/')
 library(tidyverse)
 library(signal)
+library(cowplot)
 
 ##### 1. Gross movement #####
 
@@ -283,7 +284,7 @@ rm(crqa_tailored_df, crqa_01_df, crqa_02_df)
 
 ##### 2b. Plot CRQA metrics #####
 
-# plot overall metrics
+# plot for RR
 overall_RR_plot = ggplot(analysis_crqa_df,
                          aes(x = conv_type,
                              y = RR,
@@ -291,9 +292,9 @@ overall_RR_plot = ggplot(analysis_crqa_df,
   geom_violin() +
   facet_grid(vars(condition),
              labeller = as_labeller(
-               c("FF" = "Laboratory\nFace-to-Face", 
-                 "ZR" = "Remote\nVideoconference",
-                 "ZT" = "Laboratory\nVideoconference"),
+               c("FF" = "Face-to-Face\nLaboratory", 
+                 "ZR" = "Videoconference\nRemote",
+                 "ZT" = "Videoconference\nLaboratory"),
              )) +
   scale_color_manual(values = c("blue", "red","gray"),
                      labels = c("Affiliative",
@@ -314,6 +315,7 @@ ggsave(filename = paste0('./figures/rr_results-vic.png'),
        width = 4,
        units = "in")
 
+# plot for determinism
 overall_DET_plot = ggplot(analysis_crqa_df,
                           aes(x = conv_type,
                               y = DET,
@@ -321,29 +323,78 @@ overall_DET_plot = ggplot(analysis_crqa_df,
   geom_violin() +
   facet_grid(vars(condition),
              labeller = as_labeller(
-               c("FF" = "Laboratory\nFace-to-Face", 
-                 "ZR" = "Remote\nVideoconference",
-                 "ZT" = "Laboratory\nVideoconference"),
+               c("FF" = "Face-to-Face\nLaboratory", 
+                 "ZR" = "Videoconference\nRemote",
+                 "ZT" = "Videoconference\nLaboratory"),
              )) +
   scale_color_manual(values = c("blue", "red","gray"),
-                     labels = c("Affiliative",
-                                "Argumentative",
-                                "Cooperative"),
+                     labels = c("Aff.",
+                                "Arg.",
+                                "Coop."),
                      name = "Conversation Type") + 
-  scale_x_discrete(labels = c("Affiliative",
-                              "Argumentative",
-                              "Cooperative")) +
+  scale_x_discrete(labels = c("Aff.",
+                              "Arg.",
+                              "Coop.")) +
   theme(legend.position = "none") +
   geom_jitter(width=.2) +
   xlab("Conversation Type") +
   ylab("DET (Determinism)") + 
-  ggtitle("Structure of movement\nby condition and conversation type")
-ggsave(filename = paste0('./figures/det_results-vic.png'),
-       plot = overall_DET_plot,
+  ggtitle("Full y-axis")
+overall_DET_plot_ylim = 
+  ggplot(analysis_crqa_df,
+         aes(x = conv_type,
+             y = DET,
+             color = conv_type))  +
+  geom_violin() +
+  facet_grid(vars(condition),
+             labeller = as_labeller(
+               c("FF" = "Face-to-Face\nLaboratory", 
+                 "ZR" = "Videoconference\nRemote",
+                 "ZT" = "Videoconference\nLaboratory"),
+             )) +
+  scale_color_manual(values = c("blue", "red","gray"),
+                     labels = c("Aff.",
+                                "Arg.",
+                                "Coop."),
+                     name = "Conversation Type") + 
+  scale_x_discrete(labels = c("Aff.",
+                              "Arg.",
+                              "Coop.")) +
+  theme(legend.position = "none") +
+  geom_jitter(width=.2) +
+  coord_cartesian(ylim = c(90,100)) +
+  xlab("Conversation Type") +
+  ylab("DET (Determinism) - Truncated") + 
+  ggtitle("Truncated y-axis")
+ggsave(filename = paste0('./figures/det_results_ylim-vic.png'),
+       plot = overall_DET_plot_ylim,
        height = 6,
        width = 4,
        units = "in")
 
+# side-by-side data
+table_space = grid::nullGrob()
+det_fig_data = cowplot::plot_grid(overall_DET_plot, 
+                                  table_space,
+                                  overall_DET_plot_ylim,
+                                  rel_widths = c(1,.05,1),
+                                  nrow=1)
+det_fig_title = ggdraw() + 
+  draw_label("Structure of movement by condition and conversation type", 
+             fontface = 'bold', x = 0, hjust = 0) 
+det_fig_complete = cowplot::plot_grid(det_fig_title,
+                                      det_fig_data,
+                                      rel_heights = c(0.1, 1.5),
+                                      ncol=1)
+det_fig_complete
+ggsave(filename = paste0('./figures/det_results-vic.png'),
+       plot = det_fig_complete,
+       height = 6,
+       width = 6,
+       units = "in")
+
+
+# plot for maxline
 overall_maxL_plot = 
   ggplot(analysis_crqa_df,
          aes(x = conv_type,
@@ -352,9 +403,9 @@ overall_maxL_plot =
   geom_violin() +
   facet_grid(vars(condition),
              labeller = as_labeller(
-               c("FF" = "Laboratory\nFace-to-Face", 
-                 "ZR" = "Remote\nVideoconference",
-                 "ZT" = "Laboratory\nVideoconference"),
+               c("FF" = "Face-to-Face\nLaboratory", 
+                 "ZR" = "Videoconference\nRemote",
+                 "ZT" = "Videoconference\nLaboratory"),
              )) +
   scale_color_manual(values = c("blue", "red","gray"),
                      labels = c("Affiliative",
@@ -473,6 +524,42 @@ write.csv(x = analysis_drp_df,
           row.names = FALSE)
 rm(drp_tailored_df, drp_01_df, drp_02_df)
 
+# fix so that we're plotting in the same way that we're analyzing
+# reorganize DRPs so that we always have the leader (if there is one) on one side
+leadership_test_df = analysis_drp_df %>% ungroup() %>%
+  dplyr::filter(lag != 0) %>%
+  mutate(side = ifelse(lag < 0,
+                       0,
+                       1)) %>%
+  group_by(date, conv_type, condition, side) %>%
+  summarize(mean_leadership = mean(profile)) %>%
+  pivot_wider(names_from = "side",
+              names_prefix = "side_",
+              values_from = mean_leadership) %>%
+  ungroup() %>%
+  
+  # figure out who's leading
+  mutate(mean_leader_direction = side_0 - side_1) %>%
+  dplyr::filter(mean_leader_direction != 0) %>%
+  mutate(leader = ifelse(mean_leader_direction > 0,
+                         0,
+                         1)) %>%
+  
+  # only keep the folks who we'd need to swap
+  dplyr::filter(leader == 1) %>%
+  mutate(leader = -1) %>% 
+  dplyr::select(date, conv_type, condition, leader)
+
+# merge and convert
+analysis_drp_df = left_join(analysis_drp_df, 
+                            leadership_test_df,
+                            by = c("date", "condition", "conv_type")) %>%
+  mutate(lag = ifelse(!is.na(leader),
+                      lag * leader,
+                      lag)) %>%
+  arrange(date, condition, conv_num, conv_type, lag)
+
+
 ##### 3b. Plot DRPs #####
 
 plot_drp_df = analysis_drp_df %>% ungroup() %>%
@@ -501,14 +588,14 @@ all_drp_plots = ggplot(analysis_drp_df,
   geom_smooth(se=TRUE) +
   facet_grid(vars(condition),
              labeller = as_labeller(
-               c("FF" = "Laboratory\nFace-to-Face", 
-                 "ZR" = "Remote\nVideoconference",
-                 "ZT" = "Laboratory\nVideoconference"),
+               c("FF" = "Face-to-Face\nLaboratory", 
+                 "ZR" = "Videoconference\nRemote",
+                 "ZT" = "Videoconference\nLaboratory"),
              )) +
   scale_fill_manual(values = alpha(c("blue", "red","gray"), .5),
-                     labels = c("Aff.",
-                                "Arg.",
-                                "Coop."),
+                    labels = c("Aff.",
+                               "Arg.",
+                               "Coop."),
                     name = "Conversation\nType")+
   scale_color_manual(values = c("blue", "red","darkgray"),
                      labels = c("Aff.",
