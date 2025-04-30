@@ -2,7 +2,7 @@
 
 This repository includes the code for the Stage 2 Registered Report, "Visual Information and
 Communication Context as Modulators of Interpersonal Coordination in Face-to-Face and
-Videoconference-Based Interactions" [https://doi.org/10.1016/j.actpsy.2023.103992](Romero & Paxton, 2021, 2023, *Acta Psychologica*).
+Videoconference-Based Interactions" [(Romero & Paxton, 2021, 2023, *Acta Psychologica*)](https://doi.org/10.1016/j.actpsy.2023.103992]).
 
 ## Overview
 
