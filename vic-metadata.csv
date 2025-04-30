@@ -1,0 +1,5 @@
+﻿variable,variable_type,variable_value
+difference_number,numeric,Index of differenced movement within the video (sampled at 30Hz). 
+participant,categorical,"Participant identifier within the dyad, relative to their location within the frame (""right"" or ""left"")"
+movement,numeric,"Target participant's movement, as quantified by the proportion of pixels changed (relative to all pixels in the target participant's half of the frame) from the previous frame "
+dyad,factor,"Dyad and conversation identifier: four-digit dyad identifier (starting at 1000), communication medium condition (FF as face-to-face; ZT as videoconference lab; ZR as videoconference remote), conversation number within the dyad (1-3), conversation type (aff as affiliative; arg as argumentative; coop as cooperative task-based), with underscore separator. May also include ""Video"" and/or ""Trim(med)"" after the dyad conversation identifier."
