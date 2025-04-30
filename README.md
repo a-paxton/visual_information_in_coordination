@@ -1,4 +1,4 @@
-# Visual Information in Coordination: Code to accompany Romero & Paxton (2021, in preparation)
+# Visual Information in Coordination: Code to accompany Romero & Paxton (2021, 2023)
 
 This repository includes the code for the Stage 2 Registered Report, "Visual Information and
 Communication Context as Modulators of Interpersonal Coordination in Face-to-Face and
